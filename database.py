@@ -1,9 +1,13 @@
 from sqlalchemy import create_engine , text
-db_connection_string = 'mysql+pymysql://admin:joviancareers975@jovian-careers-db.cbwysoeg2qt7.eu-north-1.rds.amazonaws.com/jovian_careers?charset=utf8mb4'
-engine = create_engine(db_connection_string,connect_args={
-  "ssl":
-})
+import os
+db_connection_string = os.environ['DB_CONNECTION_STRING']
+engine = create_engine(db_connection_string)
 
-with engine.connect() as conn:
-  result = conn.execute(text("select * from jobs"))
-  print(result.all())
+
+def load_jobs_from_db():
+  with engine.connect() as conn:
+    result = conn.execute(text("select * from jobs"))
+    jobs = []
+    for row in result.all():
+      jobs.append(row._asdict())
+  return jobs  
